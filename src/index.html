@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hello world</title>
+    <style>
+        body{
+            padding:0;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+    <div id="canvasContainer"></div>
+    <table style="width:10%;position: fixed;top: 50px;left:0px;background: #9effff">
+        <tr>
+            <td>calls:</td>
+            <td id="calls-value"></td>
+        </tr>
+        <tr>
+            <td>lines:</td>
+            <td id="lines-value"></td>
+        </tr>
+        <tr>
+            <td>points:</td>
+            <td id="points-value"></td>
+        </tr>
+        <tr>
+            <td>triangles:</td>
+            <td id="triangles-value"></td>
+        </tr>
+        <tr><td colspan="2"><hr></td></tr>
+        <tr>
+            <td>geometries:</td>
+            <td id="geometries-value"></td>
+        </tr>
+        <tr>
+            <td>textures:</td>
+            <td id="textures-value"></td>
+        </tr>
+        <tr><td colspan="2"><hr></td></tr>
+        <tr>
+            <td>GLSL programs:</td>
+            <td id="programs-value"></td>
+        </tr>
+        <tr><td colspan="2"><hr></td></tr>
+        <tr>
+            <td>position x:</td>
+            <td id="position-x-value"></td>
+        </tr>
+        <tr>
+            <td>position z:</td>
+            <td id="position-z-value"></td>
+        </tr>
+        <tr>
+            <td>position y:</td>
+            <td id="position-y-value"></td>
+        </tr>
+        <tr>
+            <td colspan="2" id="phys_info"></td>
+        </tr>
+        <tr><td colspan="2"><hr></td></tr>
+        <tr>
+            <td>rebuild sectors time:</td>
+            <td id="rebuild-sectors-time"></td>
+        </tr>
+        <tr>
+            <td>rebuild objects time:</td>
+            <td id="rebuild-objects-time"></td>
+        </tr>
+    </table>
+    <div id="static"></div>
+</body>
+</html>

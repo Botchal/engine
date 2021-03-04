@@ -1,0 +1,6 @@
+@import "~normalize.css";
+
+.myElement {
+    color: black;
+    height: 100%;
+}
