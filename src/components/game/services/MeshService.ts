@@ -147,4 +147,28 @@ export class MeshService {
         return result;
     }
 
+    /**
+     * Заменить инстанс на меш
+     *
+     * @param instanceMesh
+     * @param index
+     * @param mesh
+     * @param fakeReplacement Фейковая замена (выставит y в -100000)
+     */
+    public replaceInstancedMeshIndexWithMesh(
+        instanceMesh:InstancedMesh,
+        index:number,
+        mesh:Mesh,
+        fakeReplacement:boolean = true
+    ):void {
+        if (fakeReplacement) {
+            instanceMesh.getMatrixAt(index, this._matrix);
+            mesh.position.setFromMatrixPosition(this._matrix)
+            mesh.scale.setFromMatrixScale(this._matrix)
+            mesh.rotation.setFromRotationMatrix(this._matrix)
+        } else {
+            throw new TypeError('Это ещё не реализовано')
+        }
+    }
+
 }
