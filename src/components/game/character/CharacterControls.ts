@@ -38,6 +38,7 @@ export class CharacterControls implements UpdatebleInterface {
 
     //состояния движения
     speed = 0;
+    speedModifier = 0;
     bodyOrientation = 0;
     frontAcceleration = 600;
     backAcceleration = 600;
@@ -59,6 +60,7 @@ export class CharacterControls implements UpdatebleInterface {
     private _fpcCount = 0;
 
     private last_position: Vector3;
+    private last_y_pos:number;
 
     constructor(character: CharacterObject, callbackMesh: () => Array<Mesh|Group>, scene: Scene, charCamera:CharacterCamera, onMove) {
         this.character = character
@@ -183,18 +185,31 @@ export class CharacterControls implements UpdatebleInterface {
 
     }
 
+    slideDown() {
+
+    }
 
     updateMovement(delta) {
 
+        //console.log(delta);
+        let _delta = delta
         delta = 1;
 
         if (this.controls.crouch) {
             this.config.maxSpeed = this.config.crouchSpeed
         } else {
-            this.config.maxSpeed = this.config.walkSpeed
+            this.config.maxSpeed = this.config.walkSpeed - this.speedModifier
+            if (this.config.maxSpeed < 0) {
+                this.slideDown();
+            }
+        }
+
+        if (this.speed > 0) {
+            //console.log(this.config.walkSpeed, this.speedModifier);
         }
 
         if (this.controls.moveForward && !this.jumpStart) {
+            console.log(this.speedModifier);
             this.speed = MathUtils.clamp(this.speed + delta * this.frontAcceleration, this.config.maxReverseSpeed, this.config.maxSpeed)
         }
 
@@ -229,18 +244,17 @@ export class CharacterControls implements UpdatebleInterface {
                 this.speed = MathUtils.clamp(this.speed + k * 0.00007 * this.backAcceleration, 0, this.config.maxReverseSpeed)
             }
             if (this.speed !== 0) {
-                this.updateGroundPosition()
+                this.updateGroundPosition(_delta)
             }
 
         }
 
         if ((this.controls.moveForward || this.controls.moveBackward) && this.speed !== 0 && !this.jumpStart) {
-            this.updateGroundPosition()
+            this.updateGroundPosition(_delta)
         }
 
-        let forwardDelta = this.speed * delta
-        this.character.bodyMesh.position.x += Math.sin(this.bodyOrientation) * forwardDelta
-        this.character.bodyMesh.position.z += Math.cos(this.bodyOrientation) * forwardDelta
+        this.character.bodyMesh.position.x += Math.sin(this.bodyOrientation) * this.speed
+        this.character.bodyMesh.position.z += Math.cos(this.bodyOrientation) * this.speed
 
         if (this.controls.jump) {
             if (!this.jumpStart && this.jumpFinish) {
@@ -249,7 +263,6 @@ export class CharacterControls implements UpdatebleInterface {
             }
             let currentTime = Date.now();
             if (this.lastRequestJumpTime !== 0 && this.jumpStart && currentTime > this.lastRequestJumpTime + this.config.doubleJumpInterval) {
-                console.log("dj");
                 this.config.jumpHeight = 40;
             } else if (this.lastRequestJumpTime === 0 && this.jumpStart) {
                 this.lastRequestJumpTime = currentTime;
@@ -300,8 +313,14 @@ export class CharacterControls implements UpdatebleInterface {
         }
     }
 
-    updateGroundPosition() {
+    updateGroundPosition(delta:number) {
         RaycastService.Instance.addYFromRayDown(this.character.bodyMesh.position, this.callbackMesh);
+
+        if (this.last_y_pos) {
+            this.speedModifier = (this.character.bodyMesh.position.y - this.last_y_pos);
+        }
+
+        this.last_y_pos = this.character.bodyMesh.position.y;
     }
 
     update(delta) {

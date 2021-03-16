@@ -7,6 +7,8 @@ import {Scene} from "../../../three/src/scenes/Scene";
 import {Group} from "../../../three/src/objects/Group";
 import {InstancedMesh} from "../../../three/src/objects/InstancedMesh";
 import {Object3D} from "../../../three/src/core/Object3D";
+import {PlaneBufferGeometry} from "../../../three/src/geometries/PlaneBufferGeometry";
+import {SphereBufferGeometry} from "../../../three/src/geometries/SphereBufferGeometry";
 
 export interface InterfaceMapObject {
 
@@ -59,6 +61,11 @@ export interface InterfaceMapObject {
      * Метод должен склонировать объект и далее работать с клоном
      */
     clone():void;
+
+    /**
+     * Метод должен вернуть геометрию для дальнейшего расчёта физических соприкосновений
+     */
+    getColliderGeometry():Array<PlaneBufferGeometry>|Array<SphereBufferGeometry>|Array<BoxBufferGeometry>
 }
 
 export interface callbackLoadInterface {
@@ -70,7 +77,8 @@ export interface callbackLoadInterface {
  */
 export class BaseMapObject implements InterfaceMapObject {
 
-    objectMesh: Group;
+    name:string = 'noname';
+    objectGroup: Group;
     scale_coefficient:number = 1;
 
     loadObject(onLoad: (forestObject: InterfaceMapObject) => void) {
@@ -80,8 +88,8 @@ export class BaseMapObject implements InterfaceMapObject {
                 color: new Color(0xff0000)
             }),
         );
-        this.objectMesh = new Group();
-        this.objectMesh.add(mesh);
+        this.objectGroup = new Group();
+        this.objectGroup.add(mesh);
 
         onLoad(this);
     }
@@ -111,5 +119,19 @@ export class BaseMapObject implements InterfaceMapObject {
 
     clone(){
         this.objectMesh = this.objectMesh.clone();
+    }
+
+    hide() {
+        this.objectGroup.visible = false;
+        this.objectGroup.matrixAutoUpdate = false;
+    }
+
+    show() {
+        this.objectGroup.visible = true;
+        this.objectGroup.matrixAutoUpdate = true;
+    }
+
+    getColliderGeometry() {
+        return [this.objectGroup.children[0].geometry];
     }
 }
