@@ -1,3 +1,7 @@
+import {JoystickMoveEvent} from "../events/JoystickMoveEvent";
+import {JoystickKeyUpEvent} from "../events/JoystickKeyUpEvent";
+import {JoystickKeyDownEvent} from "../events/JoystickKeyDownEvent";
+
 export interface playerStateInterface {
     forward:boolean,
     backward:boolean,
@@ -12,11 +16,16 @@ export class UserInputService {
     private static _instance: UserInputService;
 
     private constructor() {
-        document.addEventListener('keydown', this.onKeyDown.bind(this), false)
-        document.addEventListener('keyup', this.onKeyUp.bind(this), false)
+        document.addEventListener('keydown', this.onKeyDown.bind(this), false);
+        document.addEventListener('keyup', this.onKeyUp.bind(this), false);
+
+        document.addEventListener(JoystickKeyDownEvent.type, this.onKeyDown.bind(this), false);
+        document.addEventListener(JoystickKeyUpEvent.type, this.onKeyUp.bind(this), false);
+
+        document.addEventListener(JoystickMoveEvent.type, this.onJoystickMove.bind(this), false);
     }
 
-    private playerState:playerStateInterface;
+    readonly playerState:playerStateInterface;
 
     private keyDownArray:Array<string>;
     private keyUpArray:Array<string>;
@@ -27,12 +36,12 @@ export class UserInputService {
 
     public getIsAnyKeyDown()
     {
-        return this.anyKeyDown;
+        return this.keyDownArray.length > 0;
     }
 
     public getIsAnyKeyUp()
     {
-        return this.anyKeyDown;
+        return this.keyUpArray.length > 0;
     }
 
     public getIsKeyDown(keyCode:string) {
@@ -47,7 +56,26 @@ export class UserInputService {
         }
     }
 
-    private onKeyboardKeyDown(event:Event) {
+    public getUpKeyboardButton():Array<string> {
+        return this.keyUpArray;
+    }
+
+    public getDownKeyboardButton():Array<string> {
+        return this.keyDownArray;
+    }
+
+    private onJoystickMove(event:JoystickMoveEvent) {
+        if (event.direction === JoystickMoveEvent.DIRECTION_FORWARD) {
+            this.playerState.forward = true;
+            this.playerState.backward = false;
+        } else if (event.direction === JoystickMoveEvent.DIRECTION_BACKWARD) {
+            this.playerState.backward = true;
+            this.playerState.forward = false;
+        }
+        this.playerState.angle = event.angle;
+    }
+
+    private onKeyDown(event:Event|JoystickKeyDownEvent) {
         switch (event.code) {
             case 'KeyW':
             case 'ArrowUp':
@@ -94,10 +122,19 @@ export class UserInputService {
                 break;
         }
 
+        let indexDown = this.keyDownArray.indexOf(event.code);
+        let indexUp = this.keyDownArray.indexOf(event.code);
 
+        if(indexDown === -1) {
+            this.keyDownArray.push(event.code);
+        }
+
+        if(indexUp !== -1) {
+            this.keyUpArray.splice(indexUp, 1);
+        }
     }
 
-    private onKeyboardKeyUp(event:Event) {
+    private onKeyUp(event:Event|JoystickKeyUpEvent) {
         switch (event.code) {
 
             case 'KeyW':
@@ -146,7 +183,16 @@ export class UserInputService {
 
         }
 
+        let indexUp = this.keyDownArray.indexOf(event.code);
+        let indexDown = this.keyDownArray.indexOf(event.code);
 
+        if(indexUp === -1) {
+            this.keyUpArray.push(event.code);
+        }
+
+        if(indexDown !== -1) {
+            this.keyDownArray.splice(indexDown, 1);
+        }
     }
 
 

@@ -1,5 +1,5 @@
 import {Event} from "../../../three/src/core/EventDispatcher";
 
-export class CollisionStayEvent implements Event{
-    type:string = 'CollisionStay';
+export class CollisionStayEvent extends Event {
+    static readonly type: string = 'CollisionStay';
 }
