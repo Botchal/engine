@@ -1,4 +1,3 @@
-import {MathUtils} from "../../../three/src/math/MathUtils";
 
 export class MathHelper {
 
