@@ -7,8 +7,11 @@ export interface playerStateInterface {
     backward:boolean,
     angle:number,
     crouch:boolean,
+    doubleCrouch:boolean,
     jump:boolean,
+    doubleJump:boolean,
     sprint:boolean,
+    doubleSprint:boolean,
     action:boolean,
 }
 
@@ -56,11 +59,11 @@ export class UserInputService {
         }
     }
 
-    public getUpKeyboardButton():Array<string> {
+    public getUpButtons():Array<string> {
         return this.keyUpArray;
     }
 
-    public getDownKeyboardButton():Array<string> {
+    public getDownButtons():Array<string> {
         return this.keyDownArray;
     }
 
