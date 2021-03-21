@@ -7,26 +7,13 @@ import {DirectionalLight} from "../../../three/src/lights/DirectionalLight";
 import {Clock} from "../../../three/src/core/Clock";
 import {Color} from "../../../three/src/math/Color";
 import Stats from "../../../three/examples/jsm/libs/stats.module";
-import {Fog} from "../../../three/src/scenes/Fog";
 import {RenderPass} from "../../../three/examples/jsm/postprocessing/RenderPass";
-import {ShaderPass} from "../../../three/examples/jsm/postprocessing/ShaderPass";
-import {BleachBypassShader} from "../../../three/examples/jsm/shaders/BleachBypassShader";
-import {ColorCorrectionShader} from "../../../three/examples/jsm/shaders/ColorCorrectionShader";
-import {FXAAShader} from "../../../three/examples/jsm/shaders/FXAAShader";
-import {GammaCorrectionShader} from "../../../three/examples/jsm/shaders/GammaCorrectionShader";
 import {EffectComposer} from "../../../three/examples/jsm/postprocessing/EffectComposer";
-import {Mesh} from "../../../three/src/objects/Mesh";
-import * as CANNON from "../../../cannon/src/Cannon.js";
-import {RigidBody, World} from "../../../oimo/build/oimo.module";
-import {SphereBufferGeometry} from "../../../three/src/geometries/SphereBufferGeometry";
-import {MeshBasicMaterial} from "../../../three/src/materials/MeshBasicMaterial";
-import {Vector3} from "../../../three/src/math/Vector3";
-import {SphereGeometry} from "../../../three/src/geometries/SphereGeometry";
-import {LinearEncoding, sRGBEncoding} from "../../../three/src/constants";
+import {LinearEncoding} from "../../../three/src/constants";
 
 export type DOMElement = globalThis.Element
 
-interface iBaseLevel {
+export interface BaseLevelInterface {
     container: DOMElement;
     renderer: WebGLRenderer;
     composer: EffectComposer;
@@ -42,7 +29,7 @@ interface iBaseLevel {
     mapHeight: number;
 }
 
-export class BaseLevel implements iBaseLevel {
+export class BaseLevel implements BaseLevelInterface {
     container: any;
     renderer: WebGLRenderer;
     composer: EffectComposer;
@@ -51,14 +38,11 @@ export class BaseLevel implements iBaseLevel {
     ambientLight: AmbientLight;
     directionalLight: DirectionalLight;
     clock: Clock;
+    stats: Stats;
     updatebleObjects: any;
 
     mapWeight = 512;
     mapHeight = 512;
-
-    public physWorld: World;
-    public physBody: RigidBody;
-    public physGroundSpheres:Array<RigidBody> = [];
 
     constructor(container: any, initCallback: any) {
         this.container = container;
@@ -146,38 +130,6 @@ export class BaseLevel implements iBaseLevel {
         //this.composer.addPass(gammaCorrection);
 
         this.initScene(initCallback);
-    }
-
-    setPhysGround(mesh:Mesh){
-        var vertices = mesh.geometry.attributes.position.array;
-        mesh.updateMatrixWorld();
-        console.log(mesh.geometry);
-
-        let mat = new MeshBasicMaterial({color:new Color(0x000000), wireframe:true});
-
-        let geometry = new SphereGeometry( 15, 16, 16 );
-        let material = new MeshBasicMaterial( {wireframe: true, color:new Color(0x000000)} );
-
-        let wPos = new Vector3();
-        for ( var i = 0, j = 0, l = vertices.length; i < l; i ++, j += 3 ) {
-
-            let x = vertices[ j ];
-            let y = vertices[ j+1 ];
-            let z = vertices[ j+2 ];
-
-            wPos.set(x,y,z);
-            mesh.localToWorld(wPos);
-            if (wPos.x) {
-                let sphere = this.physWorld.add({type:'sphere', size:[25,25,25], pos:[wPos.x,wPos.y,wPos.z] })
-                this.physGroundSpheres.push(sphere);
-
-               /* let hmesh = new Mesh( geometry, material );
-                hmesh.position.copy(wPos);
-
-                this.scene.add(hmesh);*/
-            }
-
-        }
     }
 
     initScene(readyCallback) {

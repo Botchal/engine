@@ -11,7 +11,11 @@ import nipplejs from 'nipplejs';
 import * as MobileDetect from 'mobile-detect';
 import {CharacterCamera} from "./CharacterCamera";
 
-export class CharacterControls implements UpdatebleInterface {
+export interface CharacterControlsInterface {
+
+}
+
+export class CharacterControls implements CharacterControlsInterface, UpdatebleInterface {
     character: CharacterObject;
     callbackMesh: () => Array<Mesh|Group>
     scene: Scene;
