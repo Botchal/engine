@@ -23,6 +23,10 @@ export class CharacterObject implements CharacterObjectInterface {
 
     scene: Scene;
 
+    public static get className():string {
+        return './components/game/character/CharacterObject';
+    }
+
     constructor(scene: Scene, clock: Clock, modelUrl: string, animationConfig: AnimationConfig, callback: callback) {
         this.animationHelper = new MMDAnimationHelper({
             afterglow: 1,

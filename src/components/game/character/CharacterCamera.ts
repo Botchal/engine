@@ -18,6 +18,10 @@ export class CharacterCamera implements CharacterCameraInterface {
     controls: OrbitControlsFollowingObject;
     gyro: Gyroscope;
 
+    public static get className():string {
+        return './components/game/character/CharacterCamera';
+    }
+
     constructor(characterMesh: Mesh, camera: PerspectiveCamera, light: DirectionalLight, renderer: WebGLRenderer) {
         this.character = characterMesh
         this.camera = camera

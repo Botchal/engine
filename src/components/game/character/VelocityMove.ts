@@ -30,6 +30,10 @@ export class VelocityMove implements UpdatebleInterface{
     private prevPosition:Vector3;
     private desiredPosition:Vector3;
 
+    public static get className():string {
+        return './components/game/character/VelocityMove';
+    }
+
     constructor(character:CharacterObject, config:SpeedConfig, colliders:Array<Mesh|SkinnedMesh|InstancedMesh>){
         this.character = character;
         this.config = config;

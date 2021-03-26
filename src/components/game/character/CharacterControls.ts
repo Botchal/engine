@@ -66,6 +66,10 @@ export class CharacterControls implements CharacterControlsInterface, UpdatebleI
     private last_position: Vector3;
     private last_y_pos:number;
 
+    public static get className():string {
+        return './components/game/character/CharacterControls';
+    }
+
     constructor(character: CharacterObject, callbackMesh: () => Array<Mesh|Group>, scene: Scene, charCamera:CharacterCamera, onMove) {
         this.character = character
         this.callbackMesh = callbackMesh

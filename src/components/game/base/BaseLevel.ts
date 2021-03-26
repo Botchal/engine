@@ -10,6 +10,9 @@ import Stats from "../../../three/examples/jsm/libs/stats.module";
 import {RenderPass} from "../../../three/examples/jsm/postprocessing/RenderPass";
 import {EffectComposer} from "../../../three/examples/jsm/postprocessing/EffectComposer";
 import {LinearEncoding} from "../../../three/src/constants";
+import {BaseObject} from "./BaseObject";
+import {DebugService} from "../services/DebugService";
+import {LevelInterface} from "../interfaces/LevelInterface";
 
 export type DOMElement = globalThis.Element
 
@@ -29,7 +32,8 @@ export interface BaseLevelInterface {
     mapHeight: number;
 }
 
-export class BaseLevel implements BaseLevelInterface {
+export class BaseLevel extends BaseObject implements BaseLevelInterface, LevelInterface {
+    name:string = 'base';
     container: any;
     renderer: WebGLRenderer;
     composer: EffectComposer;
@@ -44,9 +48,9 @@ export class BaseLevel implements BaseLevelInterface {
     mapWeight = 512;
     mapHeight = 512;
 
-    constructor(container: any, initCallback: any) {
-        this.container = container;
+    private readyCallback;
 
+    enter(): void {
         //RENDERER
         this.renderer = new WebGLRenderer({antialias: true})
         this.renderer.setPixelRatio(window.devicePixelRatio)
@@ -129,13 +133,17 @@ export class BaseLevel implements BaseLevelInterface {
         //this.composer.addPass(effectColor);
         //this.composer.addPass(gammaCorrection);
 
-        this.initScene(initCallback);
+        this.initScene();
     }
 
-    initScene(readyCallback) {
+    exit(): void {
 
-        readyCallback(this)
-        this.animate()
+    }
+
+    initScene() {
+
+        this.readyCallback(this);
+        this.animate();
 
     }
 
@@ -149,7 +157,7 @@ export class BaseLevel implements BaseLevelInterface {
         let scope = this;
         requestAnimationFrame(function () {
             scope.animate()
-        })
+        });
         scope.render()
         //this.physWorld.step();
     }
@@ -162,16 +170,13 @@ export class BaseLevel implements BaseLevelInterface {
     }
 
     customStats() {
-        document.getElementById('calls-value').innerText = this.renderer.info.render.calls;
-        document.getElementById('lines-value').innerText = this.renderer.info.render.lines;
-        document.getElementById('points-value').innerText = this.renderer.info.render.points;
-        document.getElementById('triangles-value').innerText = this.renderer.info.render.triangles;
-
-        document.getElementById('geometries-value').innerText = this.renderer.info.memory.geometries;
-        document.getElementById('textures-value').innerText = this.renderer.info.memory.textures;
-
-        document.getElementById('programs-value').innerText = this.renderer.info.programs.length;
-        //document.getElementById('phys_info').innerHTML = this.physWorld.performance.show();
+        let serv = DebugService.Instance;
+        serv.setIndicator('calls-value', this.renderer.info.render.calls);
+        serv.setIndicator('points-value', this.renderer.info.render.points);
+        serv.setIndicator('triangles-value', this.renderer.info.render.triangles);
+        serv.setIndicator('geometries-value', this.renderer.info.memory.geometries);
+        serv.setIndicator('textures-value', this.renderer.info.memory.textures);
+        serv.setIndicator('programs-value', this.renderer.info.programs.length);
     }
 
     updateUpdatebleObject(object: UpdatebleInterface) {
